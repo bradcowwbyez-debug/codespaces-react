@@ -68,3 +68,14 @@ This section has moved here: [https://vitejs.dev/guide/build.html](https://vitej
 ### Troubleshooting
 
 This section has moved here: [https://vitejs.dev/guide/troubleshooting.html](https://vitejs.dev/guide/troubleshooting.html)
+
+## Supabase integration
+
+Este proyecto incluye un pequeño clon de Twitter (demo) que usa Supabase como backend. Para arrancar:
+
+- Crea un proyecto en https://app.supabase.com y copia `URL` y `anon public key`.
+- Crea un archivo `.env` en la raíz con las variables que están en `.env.example`.
+- Ejecuta el SQL de `supabase/schema.sql` en el SQL editor de Supabase o con la CLI.
+- Ejecuta `npm install` y `npm start`.
+
+Los componentes React para la demo se encuentran en `src/components` y el cliente Supabase está en `src/supabase.js`.
