@@ -7,24 +7,25 @@ import { useLocation } from 'react-router-dom'
 
 export default function Layout({ children, page, setPage, user, onLogout }) {
   const location = useLocation()
+  const isLanding = location?.pathname === '/' || location?.pathname === ''
   return (
     <div className="min-h-screen flex bg-[rgb(var(--bg))] text-[rgb(var(--text))]">
       {/* Dropdown menu replaces persistent sidebar */}
       {/* Sidebar removed per UX request; to keep menu accessible we use DropdownMenu in Navbar */}
 
       <div className="flex-1">
-        <Navbar user={user} setPage={setPage} />
+        {!isLanding && <Navbar user={user} setPage={setPage} />}
         <main className="pt-16 md:pt-20">
           <div className="w-full px-4 md:container-center">
             {children}
           </div>
         </main>
         {/* Only show footer on landing page */}
-        {location?.pathname === '/' && <Footer />}
+        {isLanding && <Footer />}
       </div>
 
-      {/* Mobile nav */}
-      <MobileNav page={page} setPage={setPage} user={user} onLogout={onLogout} />
+      {/* Mobile nav (hide on landing) */}
+      {!isLanding && <MobileNav page={page} setPage={setPage} user={user} onLogout={onLogout} />}
     </div>
   )
 }
