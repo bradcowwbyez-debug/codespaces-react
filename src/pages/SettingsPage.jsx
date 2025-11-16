@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
 import { supabase } from '../supabase'
 import { Save, Loader, Bell, Lock, Palette, Globe } from 'lucide-react'
+import TwoFactorForm from '../components/TwoFactorForm'
 
 export default function SettingsPage({ user }) {
   const [loading, setLoading] = useState(false)
@@ -20,6 +21,7 @@ export default function SettingsPage({ user }) {
   })
 
   const [activeTab, setActiveTab] = useState('general')
+  const [show2faForm, setShow2faForm] = useState(false)
 
   useEffect(() => {
     if (user) fetchSettings()
@@ -260,19 +262,37 @@ export default function SettingsPage({ user }) {
                   />
                 </label>
 
-                <label className="flex items-center justify-between p-4 rounded-lg border border-gray-200 dark:border-twitter-800 hover:bg-gray-50 dark:hover:bg-twitter-800 cursor-pointer transition-colors">
-                  <div>
-                    <p className="font-semibold text-gray-900 dark:text-white">Autenticación de dos factores</p>
-                    <p className="text-sm text-gray-600 dark:text-gray-400">Proteger tu cuenta con 2FA</p>
+                <div className="p-4 rounded-lg border border-gray-200 dark:border-twitter-800">
+                  <div className="flex items-start justify-between">
+                    <div className="pr-4 flex-1">
+                      <p className="font-semibold text-gray-900 dark:text-white">Autenticación de dos factores</p>
+                      <p className="text-sm text-gray-600 dark:text-gray-400">Proteger tu cuenta con 2FA. Usa una app como Google Authenticator o Authy.</p>
+                    </div>
+                    <div className="flex-shrink-0">
+                      {!settings.two_factor_enabled ? (
+                        <button
+                          onClick={() => setShow2faForm(s => !s)}
+                          className="px-3 py-1 rounded-md bg-twitter-500 text-white"
+                        >
+                          Configurar
+                        </button>
+                      ) : (
+                        <span className="px-3 py-1 rounded-md bg-green-500 text-white">Habilitado</span>
+                      )}
+                    </div>
                   </div>
-                  <input
-                    type="checkbox"
-                    checked={settings.two_factor_enabled}
-                    onChange={() => toggleSetting('two_factor_enabled')}
-                    className="w-5 h-5 rounded cursor-pointer"
-                    disabled
-                  />
-                </label>
+
+                  {show2faForm && (
+                    <div className="mt-4">
+                      <TwoFactorForm userId={user.id} onSuccess={() => {
+                        setShow2faForm(false)
+                        setSettings(prev => ({ ...prev, two_factor_enabled: true }))
+                        alert('2FA verificada y habilitada')
+                      }} />
+                      <p className="text-sm text-gray-500 mt-2">Si ya tienes un secreto guardado para tu usuario, introduce el código TOTP para verificar.</p>
+                    </div>
+                  )}
+                </div>
 
                 <label className="flex items-center justify-between p-4 rounded-lg border border-gray-200 dark:border-twitter-800 hover:bg-gray-50 dark:hover:bg-twitter-800 cursor-pointer transition-colors">
                   <div>
