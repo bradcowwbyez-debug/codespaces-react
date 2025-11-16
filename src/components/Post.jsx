@@ -16,7 +16,7 @@ export default function Post({ post, onOpenProfile }) {
 
   const contentPreview = post?.content || ''
 
-  const [likes, setLikes] = useState(post?.likes_count || post?.likes_count || 0)
+  const [likes, setLikes] = useState(post?.likes_count || 0)
 
   const [liking, setLiking] = useState(false)
   const { saved, toggle: toggleBookmark, loading: bookmarkLoading } = useBookmark(post?.id)
@@ -89,7 +89,7 @@ export default function Post({ post, onOpenProfile }) {
             </div>
             <div className="text-right md:text-right">
               <div className="ml-3 text-xs text-[rgb(var(--muted))] md:ml-0">{post.created_at ? new Date(post.created_at).toLocaleString() : ''}</div>
-              <div className="text-sm text-[rgb(var(--muted))]">{likes} {likes === 1 ? 'like' : 'likes'}</div>
+              <div className="text-sm text-[rgb(var(--muted))]">{likes} {likes === 1 ? 'me gusta' : 'me gusta'}</div>
             </div>
           </div>
 
@@ -133,7 +133,7 @@ export default function Post({ post, onOpenProfile }) {
             )}
           </button>
 
-          <button className="btn-interact" aria-label="Comentar">
+          <button className="btn-interact" aria-label="Comentar" onClick={() => setViewerOpen(true)}>
             <MessageCircle size={18} /> <span className="text-sm">Comentar</span>
           </button>
 

@@ -29,11 +29,11 @@ export default function Timeline({ onOpenProfile }) {
     const mapped = (data || []).map((p) => ({
       ...p,
       author: {
-        id: p.author_id || p.author_id,
-        username: p.author_username || p.profiles?.username,
-        avatar_url: p.author_avatar || p.profiles?.avatar_url,
+        id: p.author_id,
+        username: p.profiles?.username,
+        avatar_url: p.profiles?.avatar_url,
       },
-      likes_count: p.likes_count || p.likes_count || 0,
+      likes_count: p.likes_count || 0,
       liked_by_user: p.liked_by_user || false
     }))
 
@@ -111,13 +111,7 @@ export default function Timeline({ onOpenProfile }) {
 
         {posts.map((p, idx) => (
           <div key={p.id} style={{ animationDelay: `${idx * 50}ms` }} className="animate-fade-in">
-            <Post post={{
-              ...p,
-              author: {
-                username: p.profiles?.username,
-                avatar_url: p.profiles?.avatar_url
-              }
-            }} onOpenProfile={() => onOpenProfile && onOpenProfile(p.author_id)} />
+            <Post post={p} onOpenProfile={() => onOpenProfile && onOpenProfile(p.author?.id || p.author_id)} />
           </div>
         ))}
       </div>
