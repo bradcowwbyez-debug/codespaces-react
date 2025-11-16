@@ -130,7 +130,7 @@ main, .container, .content {
   background: rgb(var(--card));
   box-shadow: var(--shadow);
   border-radius: .75rem; /* rounded-2xl */
-  border: 1px solid rgba(0,0,0,0.04);
+  border: 1px solid rgba(var(--muted), 0.06);
 }
 
 /* Post image */
@@ -208,6 +208,12 @@ main, .container, .content {
 
 .btn-interact {
   @apply inline-flex items-center gap-2 px-3 py-2 rounded-full text-sm transition-transform duration-150;
+}
+
+/* ensure interact buttons have visible focus state */
+.btn-interact:focus {
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(29,155,240,0.12);
 }
 
 .btn-interact:active {

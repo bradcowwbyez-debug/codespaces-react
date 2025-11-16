@@ -10,23 +10,30 @@ export default function MobileNav({ page, setPage, user, onLogout }) {
 
   const toggleMenu = () => setIsOpen(!isOpen)
 
+  // close on Escape for accessibility
+  useEffect(() => {
+    const onKey = (e) => {
+      if (e.key === 'Escape' && isOpen) setIsOpen(false)
+    }
+    window.addEventListener('keydown', onKey)
+    return () => window.removeEventListener('keydown', onKey)
+  }, [isOpen])
+
   const menuItems = [
-    { icon: Home, label: 'Inicio', page: 'feed', color: 'hover:bg-blue-50 dark:hover:bg-blue-900/20' },
-    { icon: Search, label: 'Explorar', page: 'search', color: 'hover:bg-purple-50 dark:hover:bg-purple-900/20' },
-    { icon: Bell, label: 'Notificaciones', page: 'notifications', color: 'hover:bg-orange-50 dark:hover:bg-orange-900/20' },
-    { icon: Mail, label: 'Mensajes', page: 'messages', color: 'hover:bg-pink-50 dark:hover:bg-pink-900/20' },
-    { icon: Bookmark, label: 'Guardados', page: 'saved', color: 'hover:bg-green-50 dark:hover:bg-green-900/20' },
-    { icon: Heart, label: 'Mis Likes', page: 'likes', color: 'hover:bg-red-50 dark:hover:bg-red-900/20' },
-    { icon: User, label: 'Perfil', page: 'profile', color: 'hover:bg-indigo-50 dark:hover:bg-indigo-900/20' },
-    { icon: Settings, label: 'Configuración', page: 'settings', color: 'hover:bg-gray-50 dark:hover:bg-gray-800' },
+    { icon: Home, label: 'Inicio', page: 'feed', path: '/feed', color: 'hover:bg-blue-50 dark:hover:bg-blue-900/20' },
+    { icon: Search, label: 'Explorar', page: 'search', path: '/search', color: 'hover:bg-purple-50 dark:hover:bg-purple-900/20' },
+    { icon: Bell, label: 'Notificaciones', page: 'notifications', path: '/notifications', color: 'hover:bg-orange-50 dark:hover:bg-orange-900/20' },
+    { icon: Bookmark, label: 'Guardados', page: 'bookmarks', path: '/bookmarks', color: 'hover:bg-green-50 dark:hover:bg-green-900/20' },
+    { icon: User, label: 'Perfil', page: 'profile', path: user ? `/profile/${user.id}` : '/signup', color: 'hover:bg-indigo-50 dark:hover:bg-indigo-900/20' },
+    { icon: Settings, label: 'Configuración', page: 'settings', path: '/settings', color: 'hover:bg-gray-50 dark:hover:bg-gray-800' },
   ]
 
   const navTo = useNavigate()
   const [unread, setUnread] = useState(0)
 
-  const handleNavClick = (page) => {
-    setPage(page)
-    try { navTo(page === 'feed' ? '/' : `/${page}`) } catch (e) {}
+  const handleNavClick = (item) => {
+    setPage(item.page)
+    try { navTo(item.path) } catch (e) {}
     setIsOpen(false)
   }
 
@@ -70,7 +77,9 @@ export default function MobileNav({ page, setPage, user, onLogout }) {
           {/* Hamburguesa */}
           <button
             onClick={toggleMenu}
-            className="p-2 rounded-full hover:bg-gray-100 dark:hover:bg-twitter-800 transition-all duration-300"
+            aria-label="Abrir menú"
+            aria-expanded={isOpen}
+            className="p-2 rounded-full hover:bg-gray-100 dark:hover:bg-twitter-800 transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-twitter-500"
             title="Menú"
           >
             <div className="relative w-6 h-5">
@@ -85,8 +94,9 @@ export default function MobileNav({ page, setPage, user, onLogout }) {
 
           {/* Botón Crear */}
           <button
-            className="bg-gradient-to-r from-twitter-600 to-blue-600 hover:from-twitter-700 hover:to-blue-700 text-white rounded-full p-2 shadow-lg transition-all duration-300 hover:shadow-xl"
-            onClick={() => handleNavClick('compose')}
+            className="bg-gradient-to-r from-twitter-600 to-blue-600 hover:from-twitter-700 hover:to-blue-700 text-white rounded-full p-2 shadow-lg transition-all duration-300 hover:shadow-xl focus:outline-none focus:ring-2 focus:ring-twitter-500"
+            onClick={() => { if (!user) { navTo('/signup'); return } setPage('compose'); navTo('/compose') }}
+            aria-label="Crear post"
             title="Crear post"
           >
             <Plus size={20} />
@@ -133,16 +143,18 @@ export default function MobileNav({ page, setPage, user, onLogout }) {
         {/* Items del menú */}
         <FocusLock disabled={!isOpen} returnFocus={true}>
         <nav className="py-4 space-y-2">
-          {menuItems.map(({ icon: Icon, label, page: itemPage, color }) => (
+          {menuItems.map((item) => (
             <button
-              key={itemPage}
-              onClick={() => handleNavClick(itemPage)}
-              className={`w-full flex items-center gap-4 px-4 py-3 text-gray-700 dark:text-gray-200 font-medium transition-all duration-200 ${color} ${
-                page === itemPage ? 'bg-twitter-50 dark:bg-twitter-800/30 border-l-4 border-twitter-600 text-twitter-600 dark:text-twitter-400' : ''
+              key={item.page}
+                onClick={() => handleNavClick(item)}
+                className={`w-full flex items-center gap-4 px-4 py-3 text-gray-700 dark:text-gray-200 font-medium transition-all duration-200 ${item.color} ${
+                page === item.page ? 'bg-twitter-50 dark:bg-twitter-800/30 border-l-4 border-twitter-600 text-twitter-600 dark:text-twitter-400' : ''
               }`}
+                aria-label={item.label}
+                tabIndex={0}
             >
-              <Icon size={22} />
-              <span>{label}</span>
+              <item.icon size={22} />
+              <span>{item.label}</span>
             </button>
           ))}
         </nav>
